@@ -16,6 +16,8 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
+        addtaskdialog.cpp
+        addtaskdialog.h
         mainwindow.ui
 )
 

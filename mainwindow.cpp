@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -6,6 +7,11 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
+
+void MainWindow::openAddTaskDialog() {
+  taskDialog = new AddTaskDialog(this);
+  taskDialog->exec();
+}
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   auto toDoColumn = new QGroupBox("To-Do");
@@ -43,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   mainLayout->addWidget(toDoColumn);
   mainLayout->addWidget(inProgressColumn);
   mainLayout->addWidget(doneColumn);
+
+  connect(addTaskButton, &QPushButton::clicked, this, &MainWindow::openAddTaskDialog);
 }
 
 MainWindow::~MainWindow() {}
