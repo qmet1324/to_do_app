@@ -9,7 +9,6 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
-#include <qobject.h>
 
 void MainWindow::openAddTaskDialog() {
   AddTaskDialog taskDialog(this);
@@ -56,8 +55,35 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   mainLayout->addWidget(inProgressColumn);
   mainLayout->addWidget(doneColumn);
 
+  // Open a Dialog upon pressing the '+' button
   connect(addTaskButton, &QPushButton::clicked, this,
           &MainWindow::openAddTaskDialog);
+
+  // Enable drag and drop behavior
+  toDoList->setSelectionMode(QAbstractItemView::SingleSelection);
+  inProgressList->setSelectionMode(QAbstractItemView::SingleSelection);
+  doneList->setSelectionMode(QAbstractItemView::SingleSelection);
+
+  toDoList->setDragEnabled(true);
+  inProgressList->setDragEnabled(true);
+  doneList->setDragEnabled(true);
+
+  toDoList->setAcceptDrops(true);
+  inProgressList->setAcceptDrops(true);
+  doneList->setAcceptDrops(true);
+
+  toDoList->setDropIndicatorShown(true);
+  inProgressList->setDropIndicatorShown(true);
+  doneList->setDropIndicatorShown(true);
+
+  toDoList->setDragDropMode(QAbstractItemView::DragDrop);
+  inProgressList->setDragDropMode(QAbstractItemView::DragDrop);
+  doneList->setDragDropMode(QAbstractItemView::DragDrop);
+
+  // Move one task from one column to another without copying it
+  toDoList->setDefaultDropAction(Qt::MoveAction);
+  inProgressList->setDefaultDropAction(Qt::MoveAction);
+  doneList->setDefaultDropAction(Qt::MoveAction);
 }
 
 MainWindow::~MainWindow() {}
