@@ -18,7 +18,7 @@ public:
 private:
   QLineEdit *m_taskInput;
   QLabel *m_dialogTitle;
-  QPushButton *m_clearButton;
+  QPushButton *m_closeButton;
   QPushButton *m_saveButton;
 };
 #endif // ADDTASKDIALOG_H

@@ -1,8 +1,8 @@
 #include "addtaskdialog.h"
-#include <qboxlayout.h>
-#include <qpushbutton.h>
-#include <qwidget.h>
-#include <qwindowdefs.h>
+
+#include <QBoxLayout>
+
+QString AddTaskDialog::taskName() const { return m_taskInput->text(); }
 
 AddTaskDialog::AddTaskDialog(QWidget *parent) : QDialog(parent) {
   auto mainDialogLayout = new QVBoxLayout(this);
@@ -12,16 +12,21 @@ AddTaskDialog::AddTaskDialog(QWidget *parent) : QDialog(parent) {
   m_dialogTitle = new QLabel("Add Task:");
   m_taskInput = new QLineEdit;
   m_saveButton = new QPushButton("Save");
-  m_clearButton = new QPushButton("Clear");
+  m_closeButton = new QPushButton("Close");
 
   inputDialogLayout->addWidget(m_dialogTitle);
   inputDialogLayout->addWidget(m_taskInput);
 
-  buttonsDialogLayout->addWidget(m_clearButton);
+  buttonsDialogLayout->addWidget(m_closeButton);
   buttonsDialogLayout->addWidget(m_saveButton);
 
   mainDialogLayout->addLayout(inputDialogLayout);
   mainDialogLayout->addLayout(buttonsDialogLayout);
+
+  connect(m_closeButton, &QPushButton::clicked, this,
+          &QDialog::reject);
+  connect(m_saveButton, &QPushButton::clicked, this,
+          &QDialog::accept);
 }
 
 AddTaskDialog::~AddTaskDialog() {}

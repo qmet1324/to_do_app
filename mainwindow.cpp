@@ -1,5 +1,7 @@
 #include "mainwindow.h"
+#include "addtaskdialog.h"
 
+#include <QDialog>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -7,23 +9,27 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
+#include <qobject.h>
 
 void MainWindow::openAddTaskDialog() {
-  taskDialog = new AddTaskDialog(this);
-  taskDialog->exec();
+  AddTaskDialog taskDialog(this);
+  if (taskDialog.exec() == QDialog::Accepted) {
+    QString newTask = taskDialog.taskName();
+    toDoList->addItem(newTask);
+  }
 }
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
-  auto toDoColumn = new QGroupBox("To-Do");
-  auto toDoList = new QListWidget;
+  toDoColumn = new QGroupBox("To-Do");
+  toDoList = new QListWidget;
 
-  auto inProgressColumn = new QGroupBox("In Progress");
-  auto inProgressList = new QListWidget;
+  inProgressColumn = new QGroupBox("In Progress");
+  inProgressList = new QListWidget;
 
-  auto doneColumn = new QGroupBox("Done");
-  auto doneList = new QListWidget;
+  doneColumn = new QGroupBox("Done");
+  doneList = new QListWidget;
 
-  auto addTaskButton = new QPushButton("+");
+  addTaskButton = new QPushButton("+");
 
   // Create To-Do column
   auto toDoColumnLayout = new QVBoxLayout;
@@ -50,7 +56,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   mainLayout->addWidget(inProgressColumn);
   mainLayout->addWidget(doneColumn);
 
-  connect(addTaskButton, &QPushButton::clicked, this, &MainWindow::openAddTaskDialog);
+  connect(addTaskButton, &QPushButton::clicked, this,
+          &MainWindow::openAddTaskDialog);
 }
 
 MainWindow::~MainWindow() {}
