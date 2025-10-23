@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "addtaskdialog.h"
+#include "tasklistwidget.h"
 
 #include <QDialog>
 #include <QGroupBox>
@@ -9,6 +10,7 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
+#include <qmimedata.h>
 
 void MainWindow::openAddTaskDialog() {
   AddTaskDialog taskDialog(this);
@@ -18,15 +20,20 @@ void MainWindow::openAddTaskDialog() {
   }
 }
 
+void MainWindow::handleTaskMoved(QString taskText, QString columnOrigin,
+                                 QString columnTransfer) {
+  // std::cout << "The task has been moved" << std::endl;
+}
+
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   toDoColumn = new QGroupBox("To-Do");
-  toDoList = new QListWidget;
+  toDoList = new TaskListWidget("To-Do");
 
   inProgressColumn = new QGroupBox("In Progress");
-  inProgressList = new QListWidget;
+  inProgressList = new TaskListWidget("In Progress");
 
   doneColumn = new QGroupBox("Done");
-  doneList = new QListWidget;
+  doneList = new TaskListWidget("Done");
 
   addTaskButton = new QPushButton("+");
 
@@ -59,31 +66,10 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   connect(addTaskButton, &QPushButton::clicked, this,
           &MainWindow::openAddTaskDialog);
 
-  // Enable drag and drop behavior
-  toDoList->setSelectionMode(QAbstractItemView::SingleSelection);
-  inProgressList->setSelectionMode(QAbstractItemView::SingleSelection);
-  doneList->setSelectionMode(QAbstractItemView::SingleSelection);
-
-  toDoList->setDragEnabled(true);
-  inProgressList->setDragEnabled(true);
-  doneList->setDragEnabled(true);
-
-  toDoList->setAcceptDrops(true);
-  inProgressList->setAcceptDrops(true);
-  doneList->setAcceptDrops(true);
-
-  toDoList->setDropIndicatorShown(true);
-  inProgressList->setDropIndicatorShown(true);
-  doneList->setDropIndicatorShown(true);
-
-  toDoList->setDragDropMode(QAbstractItemView::DragDrop);
-  inProgressList->setDragDropMode(QAbstractItemView::DragDrop);
-  doneList->setDragDropMode(QAbstractItemView::DragDrop);
-
-  // Move one task from one column to another without copying it
-  toDoList->setDefaultDropAction(Qt::MoveAction);
-  inProgressList->setDefaultDropAction(Qt::MoveAction);
-  doneList->setDefaultDropAction(Qt::MoveAction);
+  // Columns are emitting informative signals to the MainWindow
+  connect(toDoList, &TaskListWidget::taskMoved, this, &MainWindow::handleTaskMoved);
+  connect(inProgressList, &TaskListWidget::taskMoved, this, &MainWindow::handleTaskMoved);
+  connect(doneList, &TaskListWidget::taskMoved, this, &MainWindow::handleTaskMoved);
 }
 
 MainWindow::~MainWindow() {}
