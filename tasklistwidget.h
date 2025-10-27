@@ -6,7 +6,9 @@
 #include <QGroupBox>
 #include <QListWidget>
 #include <QMimeData>
+#include <qevent.h>
 #include <qmimedata.h>
+#include <qnamespace.h>
 
 class TaskListWidget : public QListWidget {
   Q_OBJECT
@@ -16,12 +18,15 @@ public:
   ~TaskListWidget();
 
 signals:
-  void taskMoved(QString taskName, QString columnOrigin,
-                 QString columnTransfer);
+  void taskMoved(QString &taskName, QString &columnOrigin,
+                 QString &columnTransfer);
 
 protected:
-  void dropEvent(QDropEvent *event) override;
-  QMimeData *mimeData(const QList<QListWidgetItem *> &items) const override;
+  void dragMoveEvent(QDragMoveEvent *event);
+  void dropEvent(QDropEvent *event);
+  void startDrag(Qt::DropActions supportedActions);
+  void dragEnterEvent(QDragEnterEvent *event);
+  Qt::DropAction supportedDropActions();
 
 private:
   QString m_columnName;

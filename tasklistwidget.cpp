@@ -1,5 +1,14 @@
 #include "tasklistwidget.h"
+#include <qdrag.h>
+#include <qevent.h>
+#include <qlist.h>
+#include <qlistwidget.h>
+#include <qlogging.h>
+#include <qmimedata.h>
+#include <qnamespace.h>
 #include <qobject.h>
+#include <qstringview.h>
+#include <qtmetamacros.h>
 #include <qwidget.h>
 
 TaskListWidget::TaskListWidget(QString columnName, QWidget *parent)
@@ -15,35 +24,63 @@ TaskListWidget::TaskListWidget(QString columnName, QWidget *parent)
   setDefaultDropAction(Qt::MoveAction);
 }
 
+void TaskListWidget::dragMoveEvent(QDragMoveEvent *event) {
+  if (event->mimeData()->hasFormat("application/x-item") &&
+      event->source() != this) {
+    event->setDropAction(Qt::MoveAction);
+    event->accept();
+  } else {
+    event->ignore();
+  }
+}
+
 void TaskListWidget::dropEvent(QDropEvent *event) {
-  QListWidget::dropEvent(event);
+  if (event->mimeData()->hasFormat("application/x-item")) {
+    event->accept();
+    event->setDropAction(Qt::MoveAction);
 
-  const QMimeData *mime = event->mimeData();
-  if (!mime->hasText()) {
-    qDebug() << "No text data in mime";
+    QListWidgetItem *item = new QListWidgetItem;
+    QString taskName = event->mimeData()->data("application/x-item");
+    QString originColumnName =
+        event->mimeData()->data("application/x-origin-column");
+    QString targetColumnName = m_columnName;
+    item->setText(taskName);
+    addItem(item);
+
+    emit taskMoved(taskName, originColumnName, targetColumnName);
+  } else {
+    event->ignore();
+  }
+}
+
+void TaskListWidget::startDrag(Qt::DropActions supportedActions) {
+  QListWidgetItem *item = currentItem();
+  if (!item)
     return;
+
+  QMimeData *mimeData = new QMimeData();
+  QByteArray ba;
+  ba = item->text().toLatin1().data();
+  mimeData->setData("application/x-item", ba);
+  mimeData->setData("application/x-origin-column", m_columnName.toUtf8());
+  QDrag *drag = new QDrag(this);
+  drag->setMimeData(mimeData);
+
+  qDebug() << "Formats available:" << mimeData->formats();
+
+  if (drag->exec(Qt::MoveAction) == Qt::MoveAction) {
+    delete takeItem(row(item));
   }
-
-  QString taskText = mime->text();
-  QString originColumn =
-      QString::fromUtf8(mime->data("application/x-column-name"));
-  QString targetColumn = m_columnName;
-
-  qDebug() << "Drop event triggered from: " << originColumn << "\n\t to "
-           << targetColumn << "\n\ttext: " << taskText;
-
-  emit taskMoved(taskText, originColumn, targetColumn);
 }
 
-QMimeData *
-TaskListWidget::mimeData(const QList<QListWidgetItem *> &items) const {
-  QMimeData *mimeData = new QMimeData;
-  if (!items.isEmpty() && items.first()) {
-    QString text = items.first()->text();
-    mimeData->setText(text);
-    mimeData->setData("application/x-column-name", m_columnName.toUtf8());
+void TaskListWidget::dragEnterEvent(QDragEnterEvent *event) {
+  if (event->mimeData()->hasFormat("application/x-item")) {
+    event->accept();
+  } else {
+    event->ignore();
   }
-  return mimeData;
 }
+
+Qt::DropAction TaskListWidget::supportedDropActions() { return Qt::MoveAction; }
 
 TaskListWidget::~TaskListWidget() {}

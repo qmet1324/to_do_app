@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
+#include <qlogging.h>
 #include <qmimedata.h>
 
 void MainWindow::openAddTaskDialog() {
@@ -22,18 +23,22 @@ void MainWindow::openAddTaskDialog() {
 
 void MainWindow::handleTaskMoved(QString taskText, QString columnOrigin,
                                  QString columnTransfer) {
-  // std::cout << "The task has been moved" << std::endl;
+  qDebug() << "Drop event triggered from: " << columnOrigin << "\n\tto "
+           << columnTransfer << "\n\ttext: " << taskText;
 }
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   toDoColumn = new QGroupBox("To-Do");
-  toDoList = new TaskListWidget("To-Do");
+  QString toDoColumnName = toDoColumn->title();
+  toDoList = new TaskListWidget(toDoColumnName);
 
   inProgressColumn = new QGroupBox("In Progress");
-  inProgressList = new TaskListWidget("In Progress");
+  QString inProgressColumnName = inProgressColumn->title();
+  inProgressList = new TaskListWidget(inProgressColumnName);
 
   doneColumn = new QGroupBox("Done");
-  doneList = new TaskListWidget("Done");
+  QString doneColumnName = doneColumn->title();
+  doneList = new TaskListWidget(doneColumnName);
 
   addTaskButton = new QPushButton("+");
 
@@ -67,9 +72,12 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
           &MainWindow::openAddTaskDialog);
 
   // Columns are emitting informative signals to the MainWindow
-  connect(toDoList, &TaskListWidget::taskMoved, this, &MainWindow::handleTaskMoved);
-  connect(inProgressList, &TaskListWidget::taskMoved, this, &MainWindow::handleTaskMoved);
-  connect(doneList, &TaskListWidget::taskMoved, this, &MainWindow::handleTaskMoved);
+  connect(toDoList, &TaskListWidget::taskMoved, this,
+          &MainWindow::handleTaskMoved);
+  connect(inProgressList, &TaskListWidget::taskMoved, this,
+          &MainWindow::handleTaskMoved);
+  connect(doneList, &TaskListWidget::taskMoved, this,
+          &MainWindow::handleTaskMoved);
 }
 
 MainWindow::~MainWindow() {}
