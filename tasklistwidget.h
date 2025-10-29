@@ -1,33 +1,24 @@
 #ifndef TASKLISTWIDGET_H
 #define TASKLISTWIDGET_H
 
-#include <QDrag>
-#include <QDropEvent>
-#include <QGroupBox>
-#include <QListWidget>
-#include <QMimeData>
-#include <qevent.h>
-#include <qmimedata.h>
-#include <qnamespace.h>
+#include "tasklistmodel.h"
+#include <QListView>
 
-class TaskListWidget : public QListWidget {
+class TaskListWidget : public QListView {
   Q_OBJECT
 
 public:
-  explicit TaskListWidget(QString columnName, QWidget *parent = nullptr);
-  ~TaskListWidget();
+  explicit TaskListWidget(const QString &columnName, QWidget *parent = nullptr);
+
+  void addTask(const QString &taskText);
+
+  TaskListModel *taskModel() const;
 
 signals:
-  void taskMoved(QString &taskName, QString &columnOrigin,
-                 QString &columnTransfer);
-
-protected:
-  void dragMoveEvent(QDragMoveEvent *event);
-  void dropEvent(QDropEvent *event);
-  void startDrag(Qt::DropActions supportedActions);
-  void dragEnterEvent(QDragEnterEvent *event);
+  void taskMoved(QString taskName, QString columnOrigin,
+                 QString columnTransfer);
 
 private:
-  QString m_columnName;
+  TaskListModel *m_taskModel;
 };
 #endif // TASKLISTWIDGET_H

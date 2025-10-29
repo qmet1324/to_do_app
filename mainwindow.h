@@ -4,13 +4,9 @@
 #include "tasklistwidget.h"
 
 #include <QGroupBox>
+#include <QPushButton>
 #include <QWidget>
 #include <qevent.h>
-#include <qgroupbox.h>
-#include <qlistwidget.h>
-#include <qmimedata.h>
-#include <qobject.h>
-#include <qpushbutton.h>
 
 class MainWindow : public QWidget {
   Q_OBJECT

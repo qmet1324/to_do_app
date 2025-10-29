@@ -13,14 +13,16 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core Gui)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui)
 
 set(PROJECT_SOURCES
+        mainwindow.ui
         main.cpp
         mainwindow.cpp
         mainwindow.h
         addtaskdialog.cpp
         addtaskdialog.h
-        mainwindow.ui
-        tasklistwidget.h
         tasklistwidget.cpp
+        tasklistwidget.h
+        tasklistmodel.cpp
+        tasklistmodel.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

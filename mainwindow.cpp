@@ -11,14 +11,12 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
-#include <qlogging.h>
-#include <qmimedata.h>
 
 void MainWindow::openAddTaskDialog() {
   AddTaskDialog taskDialog(this);
   if (taskDialog.exec() == QDialog::Accepted) {
     QString newTask = taskDialog.taskName();
-    toDoList->addItem(newTask);
+    toDoList->addTask(newTask);
   }
 }
 
