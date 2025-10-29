@@ -55,8 +55,7 @@ void TaskListWidget::dropEvent(QDropEvent *event) {
 
 void TaskListWidget::startDrag(Qt::DropActions supportedActions) {
   QListWidgetItem *item = currentItem();
-  if (!item)
-    return;
+  if (!item) return;
 
   QMimeData *mimeData = new QMimeData();
   QByteArray ba;
@@ -80,7 +79,5 @@ void TaskListWidget::dragEnterEvent(QDragEnterEvent *event) {
     event->ignore();
   }
 }
-
-Qt::DropAction TaskListWidget::supportedDropActions() { return Qt::MoveAction; }
 
 TaskListWidget::~TaskListWidget() {}

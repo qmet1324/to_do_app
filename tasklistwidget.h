@@ -26,7 +26,6 @@ protected:
   void dropEvent(QDropEvent *event);
   void startDrag(Qt::DropActions supportedActions);
   void dragEnterEvent(QDragEnterEvent *event);
-  Qt::DropAction supportedDropActions();
 
 private:
   QString m_columnName;
