@@ -5,6 +5,7 @@
 
 #include <QGroupBox>
 #include <QWidget>
+#include <qevent.h>
 #include <qgroupbox.h>
 #include <qlistwidget.h>
 #include <qmimedata.h>
@@ -22,6 +23,9 @@ private slots:
   void openAddTaskDialog();
   void handleTaskMoved(QString taskText, QString columnOrigin,
                        QString columnTransfer);
+
+protected:
+  void closeEvent(QCloseEvent *event) override;
 
 private:
   QGroupBox *toDoColumn;

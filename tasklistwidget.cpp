@@ -27,7 +27,6 @@ TaskListWidget::TaskListWidget(QString columnName, QWidget *parent)
 void TaskListWidget::dragMoveEvent(QDragMoveEvent *event) {
   if (event->mimeData()->hasFormat("application/x-item") &&
       event->source() != this) {
-    event->setDropAction(Qt::MoveAction);
     event->accept();
   } else {
     event->ignore();
@@ -37,7 +36,6 @@ void TaskListWidget::dragMoveEvent(QDragMoveEvent *event) {
 void TaskListWidget::dropEvent(QDropEvent *event) {
   if (event->mimeData()->hasFormat("application/x-item")) {
     event->accept();
-    event->setDropAction(Qt::MoveAction);
 
     QListWidgetItem *item = new QListWidgetItem;
     QString taskName = event->mimeData()->data("application/x-item");
@@ -64,8 +62,6 @@ void TaskListWidget::startDrag(Qt::DropActions supportedActions) {
   mimeData->setData("application/x-origin-column", m_columnName.toUtf8());
   QDrag *drag = new QDrag(this);
   drag->setMimeData(mimeData);
-
-  qDebug() << "Formats available:" << mimeData->formats();
 
   if (drag->exec(Qt::MoveAction) == Qt::MoveAction) {
     delete takeItem(row(item));

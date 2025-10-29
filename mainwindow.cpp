@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QListWidget>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
@@ -18,6 +19,18 @@ void MainWindow::openAddTaskDialog() {
   if (taskDialog.exec() == QDialog::Accepted) {
     QString newTask = taskDialog.taskName();
     toDoList->addItem(newTask);
+  }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+  QMessageBox::StandardButton reply;
+  reply = QMessageBox::question(this, "Confirm Close",
+                                "Are you sure you want to quit?",
+                                QMessageBox::Yes | QMessageBox::No);
+  if (reply == QMessageBox::Yes) {
+    event->accept();
+  } else {
+    event->ignore();
   }
 }
 
