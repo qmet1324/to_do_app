@@ -1,4 +1,8 @@
 #include "tasklistmodel.h"
+#include <qlogging.h>
+#include <qnamespace.h>
+#include <qtmetamacros.h>
+#include <strings.h>
 
 TaskListModel::TaskListModel(const QString &columnName, QObject *parent)
     : QStandardItemModel(parent), m_columnName(columnName) {}
@@ -12,9 +16,11 @@ QMimeData *TaskListModel::mimeData(const QModelIndexList &indexes) const {
 
   if (!indexes.isEmpty()) {
     QString text = data(indexes.first(), Qt::DisplayRole).toString();
-    mimeData->setText(text);
-    mimeData->setData("application/x-task-item", text.toUtf8());
-    mimeData->setData("application/x-origin-column", m_columnName.toUtf8());
+    if (!text.isEmpty()) {
+      mimeData->setText(text);
+      mimeData->setData("application/x-task-item", text.toUtf8());
+      mimeData->setData("application/x-origin-column", m_columnName.toUtf8());
+    }
   }
   return mimeData;
 }
