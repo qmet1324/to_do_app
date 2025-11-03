@@ -1,10 +1,15 @@
 #include "mainwindow.h"
 #include "addtaskdialog.h"
+#include "tasklistmodel.h"
 #include "tasklistwidget.h"
 
 #include <QDialog>
+#include <QFile>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLabel>
 #include <QListWidget>
 #include <QMessageBox>
@@ -38,6 +43,56 @@ void MainWindow::handleTaskMoved(QString taskText, QString columnOrigin,
            << columnTransfer << "\n\ttext: " << taskText;
 }
 
+void MainWindow::loadTasksFromFile() {
+  QFile file("build/tasks.json");
+  if (file.open(QIODevice::ReadOnly)) {
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    QJsonArray taskArray = doc.object()["tasks"].toArray();
+
+    for (auto taskIndex : taskArray) {
+      QJsonObject taskObject = taskIndex.toObject();
+      QString taskText = taskObject["text"].toString();
+      QString taskColumn = taskObject["column"].toString();
+
+      if (columnsMap.contains(taskColumn)) {
+        columnsMap[taskColumn]->addTask(taskText);
+      }
+    }
+  }
+}
+
+void MainWindow::saveTasksToFile() {
+  QJsonArray taskArray;
+  for (auto mapI = columnsMap.begin(); mapI != columnsMap.end(); ++mapI) {
+    QString columnName = mapI.key();
+    TaskListWidget *listWidget = mapI.value();
+    TaskListModel *listModel = listWidget->taskModel();
+
+    for (int row = 0; row < listModel->rowCount(); ++row) {
+      QModelIndex index = listModel->index(row, 0);
+      QString taskText = listModel->data(index, Qt::DisplayRole).toString();
+
+      QJsonObject taskObject;
+      taskObject["text"] = taskText;
+      taskObject["column"] = columnName;
+      taskArray.append(taskObject);
+    }
+  }
+
+  QJsonObject root;
+  root["tasks"] = taskArray;
+
+  QJsonDocument doc(root);
+  QFile file("build/tasks.json");
+  if (file.open(QIODevice::WriteOnly)) {
+    file.write(doc.toJson());
+    file.close();
+  }
+}
+
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   toDoColumn = new QGroupBox("To-Do");
   QString toDoColumnName = toDoColumn->title();
@@ -52,6 +107,10 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   doneList = new TaskListWidget(doneColumnName);
 
   addTaskButton = new QPushButton("+");
+
+  columnsMap = {{toDoColumn->title(), toDoList},
+                {inProgressColumn->title(), inProgressList},
+                {doneColumn->title(), doneList}};
 
   // Create To-Do column
   auto toDoColumnLayout = new QVBoxLayout;
@@ -89,6 +148,11 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
           &MainWindow::handleTaskMoved);
   connect(doneList, &TaskListWidget::taskMoved, this,
           &MainWindow::handleTaskMoved);
+
+  QFile file("build/tasks.json");
+  if (file.exists()) {
+    loadTasksFromFile();
+  }
 }
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow() { saveTasksToFile(); }

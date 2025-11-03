@@ -12,6 +12,7 @@ public:
   explicit TaskListModel(const QString &columnName, QObject *parent = nullptr);
 
   Qt::DropActions supportedDropActions() const override;
+
   QStringList mimeTypes() const override;
 
   QMimeData *mimeData(const QModelIndexList &indexes) const override;
