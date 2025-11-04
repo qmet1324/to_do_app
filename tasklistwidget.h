@@ -10,7 +10,7 @@ class TaskListWidget : public QListView {
 public:
   explicit TaskListWidget(const QString &columnName, QWidget *parent = nullptr);
 
-  void addTask(const QString &taskText);
+  void addTask(const QString &taskText, const QDate &dueDate, const QString &priority);
 
   TaskListModel *taskModel() const;
 

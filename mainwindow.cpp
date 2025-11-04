@@ -16,12 +16,18 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
+#include <qcontainerfwd.h>
+#include <qdatetime.h>
+#include <qlogging.h>
+#include <qnamespace.h>
 
 void MainWindow::openAddTaskDialog() {
   AddTaskDialog taskDialog(this);
   if (taskDialog.exec() == QDialog::Accepted) {
     QString newTask = taskDialog.taskName();
-    toDoList->addTask(newTask);
+    QDate taskDueDate = taskDialog.taskDueDate();
+    QString taskPriority = taskDialog.taskPriority();
+    toDoList->addTask(newTask, taskDueDate, taskPriority);
   }
 }
 
@@ -56,9 +62,11 @@ void MainWindow::loadTasksFromFile() {
       QJsonObject taskObject = taskIndex.toObject();
       QString taskText = taskObject["text"].toString();
       QString taskColumn = taskObject["column"].toString();
+      QDate taskDueDate = QDate::fromString(taskObject["dueDate"].toString(), Qt::ISODate);
+      QString taskPriority = taskObject["priorityLevel"].toString();
 
       if (columnsMap.contains(taskColumn)) {
-        columnsMap[taskColumn]->addTask(taskText);
+        columnsMap[taskColumn]->addTask(taskText, taskDueDate, taskPriority);
       }
     }
   }
@@ -73,11 +81,15 @@ void MainWindow::saveTasksToFile() {
 
     for (int row = 0; row < listModel->rowCount(); ++row) {
       QModelIndex index = listModel->index(row, 0);
-      QString taskText = listModel->data(index, Qt::DisplayRole).toString();
+      QString taskText = listModel->data(index, TaskListModel::TextRole).toString();
+      QDate taskDueDate = listModel->data(index, TaskListModel::DueDateRole).toDate();
+      QString taskPriority = listModel->data(index, TaskListModel::PriorityRole).toString();
 
       QJsonObject taskObject;
       taskObject["text"] = taskText;
       taskObject["column"] = columnName;
+      taskObject["dueDate"] = taskDueDate.toString(Qt::ISODate);
+      taskObject["priorityLevel"] = taskPriority;
       taskArray.append(taskObject);
     }
   }

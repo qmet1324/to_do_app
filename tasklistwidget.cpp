@@ -2,7 +2,9 @@
 #include "tasklistmodel.h"
 #include <QMessageBox>
 #include <QPushButton>
+#include <qlogging.h>
 #include <qmessagebox.h>
+#include <qnamespace.h>
 #include <qpushbutton.h>
 
 TaskListWidget::TaskListWidget(const QString &columnName, QWidget *parent)
@@ -15,6 +17,7 @@ TaskListWidget::TaskListWidget(const QString &columnName, QWidget *parent)
   setAcceptDrops(true);
   setDropIndicatorShown(true);
   setDragDropMode(QAbstractItemView::DragDrop);
+  setDefaultDropAction(Qt::MoveAction);
 
   setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -46,11 +49,9 @@ TaskListWidget::TaskListWidget(const QString &columnName, QWidget *parent)
           });
 }
 
-void TaskListWidget::addTask(const QString &taskText) {
-  if (!taskText.isEmpty()) {
-    auto *item = new QStandardItem(taskText);
-    m_taskModel->appendRow(item);
-  }
+void TaskListWidget::addTask(const QString &taskText, const QDate &dueDate,
+                             const QString &priority) {
+  taskModel()->addTask(taskText, dueDate, priority);
 }
 
 TaskListModel *TaskListWidget::taskModel() const { return m_taskModel; }
