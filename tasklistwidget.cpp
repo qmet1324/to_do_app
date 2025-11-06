@@ -1,83 +1,57 @@
 #include "tasklistwidget.h"
-#include <qdrag.h>
-#include <qevent.h>
-#include <qlist.h>
-#include <qlistwidget.h>
+#include "tasklistmodel.h"
+#include <QMessageBox>
+#include <QPushButton>
 #include <qlogging.h>
-#include <qmimedata.h>
+#include <qmessagebox.h>
 #include <qnamespace.h>
-#include <qobject.h>
-#include <qstringview.h>
-#include <qtmetamacros.h>
-#include <qwidget.h>
+#include <qpushbutton.h>
 
-TaskListWidget::TaskListWidget(QString columnName, QWidget *parent)
-    : QListWidget(parent), m_columnName(columnName) {
-  // Enable drag and drop behavior
+TaskListWidget::TaskListWidget(const QString &columnName, QWidget *parent)
+    : QListView(parent) {
+  m_taskModel = new TaskListModel(columnName, this);
+  setModel(m_taskModel);
+
   setSelectionMode(QAbstractItemView::SingleSelection);
   setDragEnabled(true);
   setAcceptDrops(true);
   setDropIndicatorShown(true);
   setDragDropMode(QAbstractItemView::DragDrop);
-
-  // Move one task from one column to another without copying it
   setDefaultDropAction(Qt::MoveAction);
+
+  setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+  connect(m_taskModel, &TaskListModel::taskMoved, this,
+          &TaskListWidget::taskMoved);
+
+  connect(this, &QListView::doubleClicked, this,
+          [this](const QModelIndex &index) {
+            if (!index.isValid())
+              return;
+
+            QMessageBox msgBox(this);
+            msgBox.setWindowTitle("Task Options");
+            msgBox.setText("What would you like to do with this task?");
+
+            QPushButton *editText =
+                msgBox.addButton("Edit", QMessageBox::AcceptRole);
+            QPushButton *deleteButton =
+                msgBox.addButton("Delete", QMessageBox::DestructiveRole);
+            QPushButton *cancelButton =
+                msgBox.addButton("Cancel", QMessageBox::RejectRole);
+            msgBox.exec();
+
+            if (msgBox.clickedButton() == editText) {
+              edit(index);
+            } else if (msgBox.clickedButton() == deleteButton) {
+              m_taskModel->removeRow(index.row());
+            }
+          });
 }
 
-void TaskListWidget::dragMoveEvent(QDragMoveEvent *event) {
-  if (event->mimeData()->hasFormat("application/x-item") &&
-      event->source() != this) {
-    event->setDropAction(Qt::MoveAction);
-    event->accept();
-  } else {
-    event->ignore();
-  }
+void TaskListWidget::addTask(const QString &taskText, const QDate &dueDate,
+                             const QString &priority) {
+  taskModel()->addTask(taskText, dueDate, priority);
 }
 
-void TaskListWidget::dropEvent(QDropEvent *event) {
-  if (event->mimeData()->hasFormat("application/x-item")) {
-    event->accept();
-    event->setDropAction(Qt::MoveAction);
-
-    QListWidgetItem *item = new QListWidgetItem;
-    QString taskName = event->mimeData()->data("application/x-item");
-    QString originColumnName =
-        event->mimeData()->data("application/x-origin-column");
-    QString targetColumnName = m_columnName;
-    item->setText(taskName);
-    addItem(item);
-
-    emit taskMoved(taskName, originColumnName, targetColumnName);
-  } else {
-    event->ignore();
-  }
-}
-
-void TaskListWidget::startDrag(Qt::DropActions supportedActions) {
-  QListWidgetItem *item = currentItem();
-  if (!item) return;
-
-  QMimeData *mimeData = new QMimeData();
-  QByteArray ba;
-  ba = item->text().toLatin1().data();
-  mimeData->setData("application/x-item", ba);
-  mimeData->setData("application/x-origin-column", m_columnName.toUtf8());
-  QDrag *drag = new QDrag(this);
-  drag->setMimeData(mimeData);
-
-  qDebug() << "Formats available:" << mimeData->formats();
-
-  if (drag->exec(Qt::MoveAction) == Qt::MoveAction) {
-    delete takeItem(row(item));
-  }
-}
-
-void TaskListWidget::dragEnterEvent(QDragEnterEvent *event) {
-  if (event->mimeData()->hasFormat("application/x-item")) {
-    event->accept();
-  } else {
-    event->ignore();
-  }
-}
-
-TaskListWidget::~TaskListWidget() {}
+TaskListModel *TaskListWidget::taskModel() const { return m_taskModel; }

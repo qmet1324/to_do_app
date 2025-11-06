@@ -18,9 +18,10 @@ set(PROJECT_SOURCES
         mainwindow.h
         addtaskdialog.cpp
         addtaskdialog.h
-        mainwindow.ui
-        tasklistwidget.h
         tasklistwidget.cpp
+        tasklistwidget.h
+        tasklistmodel.cpp
+        tasklistmodel.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -1,0 +1,55 @@
+QWidget > QPushButton {
+    background-color: #9ece6a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: #85af58; /* Darker green on hover */
+}
+
+QPushButton:pressed {
+    background-color: #6a8b46; /* Even darker on press */
+    padding: 11px 19px 9px 21px; /* Visual "push" effect */
+}
+
+QWidget > QGroupBox {
+    color: #bb9af7;
+    font-weight: 900;
+    font-size: 16px;
+}
+
+QWidget > QLabel {
+    color: #bb9af7;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QWidget > QLineEdit {
+    border: 2px solid #7dcfff; /* Blue */
+    border-radius: 8px;
+    padding: 5px;
+    font-size: 14px;
+    background-color: #a9b1d6 ; /* Light gray background */
+}
+
+QWidget > QListView {
+    background-color: #a9b1d6; /* Light gray background */
+}
+
+QWidget > QComboBox {
+    color: #e0af68;
+    font-weight: bold;
+}
+
+QWidget > QDateTimeEdit {
+    color: #e0af68;
+    font-weight: bold;
+}
+
+QWidget {
+   background-color: #1d202f;
+}
+
