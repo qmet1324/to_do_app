@@ -10,5 +10,13 @@ int main(int argc, char *argv[]) {
   window.resize(800, 600);
   window.show();
 
+  // Apply QSS config
+  QFile qssFile("mystyles.qss");
+  if (qssFile.open(QFile::ReadOnly | QFile::Text)) {
+    QTextStream stream(&qssFile);
+    window.setStyleSheet(stream.readAll());
+    qssFile.close();
+  }
+
   return a.exec(); // Execute eventloop
 }
