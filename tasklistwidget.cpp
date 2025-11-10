@@ -24,34 +24,10 @@ TaskListWidget::TaskListWidget(const QString &columnName, QWidget *parent)
   setUniformItemSizes(false);
   setMouseTracking(true);
 
-  setEditTriggers(QAbstractItemView::NoEditTriggers);
+  setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
 
   connect(m_taskModel, &TaskListModel::taskMoved, this,
           &TaskListWidget::taskMoved);
-
-  connect(this, &QListView::doubleClicked, this,
-          [this](const QModelIndex &index) {
-            if (!index.isValid())
-              return;
-
-            QMessageBox msgBox(this);
-            msgBox.setWindowTitle("Task Options");
-            msgBox.setText("What would you like to do with this task?");
-
-            QPushButton *editText =
-                msgBox.addButton("Edit", QMessageBox::AcceptRole);
-            QPushButton *deleteButton =
-                msgBox.addButton("Delete", QMessageBox::DestructiveRole);
-            QPushButton *cancelButton =
-                msgBox.addButton("Cancel", QMessageBox::RejectRole);
-            msgBox.exec();
-
-            if (msgBox.clickedButton() == editText) {
-              edit(index);
-            } else if (msgBox.clickedButton() == deleteButton) {
-              m_taskModel->removeRow(index.row());
-            }
-          });
 }
 
 void TaskListWidget::addTask(const QString &taskText, const QDate &dueDate,

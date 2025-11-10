@@ -20,6 +20,7 @@
 #include <qdatetime.h>
 #include <qlogging.h>
 #include <qnamespace.h>
+#include <qpushbutton.h>
 
 void MainWindow::openAddTaskDialog() {
   AddTaskDialog taskDialog(this);

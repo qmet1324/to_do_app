@@ -4,12 +4,81 @@
 #include <QApplication>
 #include <QDate>
 #include <QPainterPath>
-#include <qcolor.h>
-#include <qnamespace.h>
-#include <qpoint.h>
+#include <qwidget.h>
 
 TaskItemDelegate::TaskItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent) {}
+
+QWidget *TaskItemDelegate::createEditor(QWidget *parent,
+                                        const QStyleOptionViewItem &option,
+                                        const QModelIndex &index) const {
+  QWidget *editor = new QWidget(parent);
+  editor->setAutoFillBackground(true);
+  editor->setObjectName("taskEditor");
+
+  // Layouts Init
+  auto *mainLayout = new QVBoxLayout(editor);
+  mainLayout->setContentsMargins(4, 4, 4, 4);
+  auto *bottomLayout = new QHBoxLayout(editor);
+  bottomLayout->setSpacing(8);
+
+  // Objects Init
+  auto *taskEdit = new QLineEdit(editor);
+  taskEdit->setObjectName("taskEdit");
+  auto *dueDateEdit = new QDateEdit(editor);
+  dueDateEdit->setObjectName("dueDateEdit");
+  dueDateEdit->setCalendarPopup(true);
+  dueDateEdit->setDisplayFormat("yyyy-MM-dd");
+  auto *priorityBox = new QComboBox(editor);
+  priorityBox->setObjectName("priorityBox");
+  priorityBox->addItems({"Low", "Medium", "High"});
+
+  bottomLayout->addWidget(dueDateEdit);
+  bottomLayout->addWidget(priorityBox);
+
+  mainLayout->addWidget(taskEdit);
+  mainLayout->addLayout(bottomLayout);
+
+  return editor;
+}
+
+void TaskItemDelegate::setEditorData(QWidget *editor,
+                                     const QModelIndex &index) const {
+  auto *taskEdit = editor->findChild<QLineEdit *>("taskEdit");
+  auto *dueDateEdit = editor->findChild<QDateEdit *>("dueDateEdit");
+  auto *priorityBox = editor->findChild<QComboBox *>("priorityBox");
+
+  QString taskText = index.data(TaskListModel::TextRole).toString();
+  QDate dueDate = index.data(TaskListModel::DueDateRole).toDate();
+  QString taskPriority = index.data(TaskListModel::PriorityRole).toString();
+
+  taskEdit->setText(taskText);
+  if (dueDate.isValid()) {
+    dueDateEdit->setDate(dueDate);
+  }
+  priorityBox->setCurrentText(taskPriority);
+}
+
+void TaskItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                                    const QModelIndex &index) const {
+  auto *taskEdit = editor->findChild<QLineEdit *>("taskEdit");
+  auto *dueDateEdit = editor->findChild<QDateEdit *>("dueDateEdit");
+  auto *priorityBox = editor->findChild<QComboBox *>("priorityBox");
+
+  QString taskText = taskEdit->text();
+  QDate dueDate = dueDateEdit->date();
+  QString taskPriority = priorityBox->currentText();
+
+  model->setData(index, taskText, TaskListModel::TextRole);
+  model->setData(index, dueDate, TaskListModel::DueDateRole);
+  model->setData(index, taskPriority, TaskListModel::PriorityRole);
+}
+
+void TaskItemDelegate::updateEditorGeometry(QWidget *editor,
+                                            const QStyleOptionViewItem &option,
+                                            const QModelIndex &index) const {
+  editor->setGeometry(option.rect);
+}
 
 void TaskItemDelegate::paint(QPainter *painter,
                              const QStyleOptionViewItem &option,
@@ -25,16 +94,23 @@ void TaskItemDelegate::paint(QPainter *painter,
     return;
   }
 
-  // Colors Init
-  QColor baseColor = option.palette.base().color();
-  QColor bgColor = option.state & QStyle::State_Selected ? QColor("#A0C4FF")
-                                                         : QColor("#FFFFFF");
-  QColor borderColor = QColor("#D0D0D0");
-  QColor textColor = QColor("#202020");
-  QColor dateColor = QColor("#666666");
+  // Colors Init - Tokyo Night Storm palette
+  QColor bgNormal("#2e3440");
+  QColor bgHover("#3b4261");
+  QColor bgSelected("#7aa2f7");
+  QColor textColor("#c0caf5");
+  QColor dueDateColor("#7aa2f7");
+  QColor borderColor("#414868");
 
-  if (option.state & QStyle::State_MouseOver) {
-    bgColor = bgColor.lighter(110);
+  QColor highPriority("#f7768e");
+  QColor mediumPriority("#e0af68");
+  QColor lowPriority("#9ece6a");
+
+  QColor bgColor = bgNormal;
+  if (option.state & QStyle::State_Selected) {
+    bgColor = bgColor.darker(110);
+  } else if (option.state & QStyle::State_MouseOver) {
+    bgColor = bgHover;
   }
 
   // Render rounded background
@@ -57,7 +133,7 @@ void TaskItemDelegate::paint(QPainter *painter,
 
   // Render due date
   painter->setFont(option.font);
-  painter->setPen(dateColor);
+  painter->setPen(dueDateColor);
   QString dateText = "Due: " + dueDate.toString("MMM dd");
   QRectF dateRect = rect.adjusted(10, rect.height() - 28, -10, -6);
   painter->drawText(dateRect, Qt::AlignLeft, dateText);
@@ -77,7 +153,7 @@ void TaskItemDelegate::paint(QPainter *painter,
   painter->setPen(Qt::NoPen);
   painter->drawRoundedRect(badgeRect, 10, 10);
 
-  painter->setPen(Qt::white);
+  painter->setPen(Qt::black);
   painter->setFont(option.font);
   painter->drawText(badgeRect, Qt::AlignCenter, taskPriority);
 

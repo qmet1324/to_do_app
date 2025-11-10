@@ -16,6 +16,8 @@ int main(int argc, char *argv[]) {
     QTextStream stream(&qssFile);
     window.setStyleSheet(stream.readAll());
     qssFile.close();
+  } else {
+    qWarning() << "Could not load QSS file!";
   }
 
   return a.exec(); // Execute eventloop

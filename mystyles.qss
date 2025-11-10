@@ -1,55 +1,171 @@
-QWidget > QPushButton {
+/* === TOKYO NIGHT STORM GLOBAL THEME === */
+
+/* --- Base Window --- */
+QWidget {
+    background-color: #1a1b26; /* Deep background */
+    color: #c0caf5;           /* Text color */
+    font-family: "JetBrains Mono", "Fira Code", "Segoe UI", sans-serif;
+    font-size: 14px;
+}
+
+/* --- Labels --- */
+QLabel {
+    color: #bb9af7;
+    font-weight: 600;
+}
+
+/* --- Group Boxes --- */
+QGroupBox {
+    color: #bb9af7;
+    font-size: 16px;
+    font-weight: 700;
+    border: 1px solid #3b4261;
+    border-radius: 8px;
+    margin-top: 12px;
+    padding: 8px;
+}
+
+/* --- Buttons --- */
+QPushButton {
     background-color: #9ece6a;
-    color: white;
-    padding: 10px 20px;
+    color: #ffffff;
+    padding: 8px 16px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    font-weight: bold;
 }
 
 QPushButton:hover {
-    background-color: #85af58; /* Darker green on hover */
+    background-color: #85af58; /* Lighter green hover */
 }
 
 QPushButton:pressed {
-    background-color: #6a8b46; /* Even darker on press */
-    padding: 11px 19px 9px 21px; /* Visual "push" effect */
+    background-color: #6a8b46;
+    padding: 9px 15px 7px 17px; /* Press effect */
 }
 
-QWidget > QGroupBox {
-    color: #bb9af7;
-    font-weight: 900;
-    font-size: 16px;
+/* --- LineEdits --- */
+QLineEdit {
+    background-color: #24283b;
+    color: #c0caf5;
+    border: 1px solid #3b4261;
+    border-radius: 6px;
+    padding: 4px 8px;
+    selection-background-color: #7aa2f7;
+    selection-color: #ffffff;
 }
 
-QWidget > QLabel {
-    color: #bb9af7;
-    font-size: 14px;
-    font-weight: bold;
+/* --- ComboBoxes --- */
+QComboBox {
+    background-color: #24283b;
+    color: #c0caf5;
+    border: 1px solid #3b4261;
+    border-radius: 6px;
+    padding: 4px 6px;
 }
 
-QWidget > QLineEdit {
-    border: 2px solid #7dcfff; /* Blue */
+QComboBox:hover {
+    border-color: #7aa2f7;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 24px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #24283b;
+    color: #c0caf5;
+    selection-background-color: #7aa2f7;
+    selection-color: #ffffff;
+    border: 1px solid #3b4261;
+}
+
+/* --- DateEdits --- */
+QDateEdit, QDateTimeEdit {
+    background-color: #24283b;
+    color: #c0caf5;
+    border: 1px solid #3b4261;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+/* --- List Views --- */
+QListView {
+    background-color: #24283b;
+    border: 1px solid #3b4261;
     border-radius: 8px;
-    padding: 5px;
-    font-size: 14px;
-    background-color: #a9b1d6 ; /* Light gray background */
+    padding: 6px;
+    show-decoration-selected: 1;
 }
 
-QWidget > QListView {
-    background-color: #a9b1d6; /* Light gray background */
+QListView::item {
+    padding: 8px;
+    border-radius: 6px;
+    margin: 3px;
 }
 
-QWidget > QComboBox {
-    color: #e0af68;
-    font-weight: bold;
+QListView::item:selected {
+    background-color: #7aa2f7;
+    color: #ffffff;
 }
 
-QWidget > QDateTimeEdit {
-    color: #e0af68;
-    font-weight: bold;
+QListView::item:hover {
+    background-color: rgba(122, 162, 247, 0.15);
 }
 
-QWidget {
-   background-color: #1d202f;
+/* --- Scrollbars --- */
+QScrollBar:vertical {
+    background: #1a1b26;
+    width: 10px;
+    margin: 4px;
+}
+
+QScrollBar::handle:vertical {
+    background: #565f89;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #7aa2f7;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* --- Delegate Inline Editor --- */
+QWidget#taskEditor QWidget {
+    background-color: #24283b;
+    border: 1px solid #3b4261;
+    border-radius: 8px;
+    padding: 6px;
+}
+
+QWidget#taskEditor QLineEdit,
+QWidget#taskEditor QDateEdit,
+QWidget#taskEditor QComboBox {
+    background-color: #24283b;
+    color: #c0caf5;
+    border: 1px solid #3b4261;
+    border-radius: 6px;
+    padding: 4px 8px;
+    selection-background-color: #7aa2f7;
+}
+
+QWidget#taskEditor QComboBox QAbstractItemView {
+    background-color: #24283b;
+    selection-background-color: #7aa2f7;
+    selection-color: #ffffff;
+}
+
+/* --- ToolTips --- */
+QToolTip {
+    background-color: #24283b;
+    color: #c0caf5;
+    border: 1px solid #3b4261;
+    border-radius: 6px;
+    padding: 4px;
 }
 
