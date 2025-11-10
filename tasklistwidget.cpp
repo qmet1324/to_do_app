@@ -1,23 +1,28 @@
 #include "tasklistwidget.h"
+#include "taskitemdelegate.h"
 #include "tasklistmodel.h"
+
 #include <QMessageBox>
 #include <QPushButton>
-#include <qlogging.h>
-#include <qmessagebox.h>
-#include <qnamespace.h>
-#include <qpushbutton.h>
 
 TaskListWidget::TaskListWidget(const QString &columnName, QWidget *parent)
     : QListView(parent) {
+  // Object Model Init
   m_taskModel = new TaskListModel(columnName, this);
   setModel(m_taskModel);
 
+  // Enable Drag/Drop Functionality
   setSelectionMode(QAbstractItemView::SingleSelection);
   setDragEnabled(true);
   setAcceptDrops(true);
   setDropIndicatorShown(true);
   setDragDropMode(QAbstractItemView::DragDrop);
   setDefaultDropAction(Qt::MoveAction);
+
+  // Init Custom Delegate for the TaskListWidget Items
+  setItemDelegate(new TaskItemDelegate(this));
+  setUniformItemSizes(false);
+  setMouseTracking(true);
 
   setEditTriggers(QAbstractItemView::NoEditTriggers);
 

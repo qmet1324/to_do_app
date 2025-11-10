@@ -15,7 +15,6 @@ public:
     TextRole = Qt::UserRole + 1,
     DueDateRole,
     PriorityRole,
-    DoneRole
   };
   QHash<int, QByteArray> roleNames() const override;
 
