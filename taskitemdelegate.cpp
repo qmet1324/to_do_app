@@ -4,6 +4,10 @@
 #include <QApplication>
 #include <QDate>
 #include <QPainterPath>
+#include <QTextLayout>
+#include <qfontmetrics.h>
+#include <qnamespace.h>
+#include <qpoint.h>
 #include <qwidget.h>
 
 TaskItemDelegate::TaskItemDelegate(QObject *parent)
@@ -25,6 +29,8 @@ QWidget *TaskItemDelegate::createEditor(QWidget *parent,
   // Objects Init
   auto *taskEdit = new QLineEdit(editor);
   taskEdit->setObjectName("taskEdit");
+  taskEdit->setMaxLength(50);
+  taskEdit->setPlaceholderText("Edit Task");
   auto *dueDateEdit = new QDateEdit(editor);
   dueDateEdit->setObjectName("dueDateEdit");
   dueDateEdit->setCalendarPopup(true);
@@ -69,9 +75,13 @@ void TaskItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
   QDate dueDate = dueDateEdit->date();
   QString taskPriority = priorityBox->currentText();
 
-  model->setData(index, taskText, TaskListModel::TextRole);
-  model->setData(index, dueDate, TaskListModel::DueDateRole);
-  model->setData(index, taskPriority, TaskListModel::PriorityRole);
+  if (taskText.isEmpty()) {
+    model->removeRow(index.row());
+  } else {
+    model->setData(index, taskText, TaskListModel::TextRole);
+    model->setData(index, dueDate, TaskListModel::DueDateRole);
+    model->setData(index, taskPriority, TaskListModel::PriorityRole);
+  }
 }
 
 void TaskItemDelegate::updateEditorGeometry(QWidget *editor,
@@ -128,8 +138,19 @@ void TaskItemDelegate::paint(QPainter *painter,
   titleFont.setBold(true);
   painter->setFont(titleFont);
   painter->setPen(textColor);
-  QRectF textRect = rect.adjusted(10, 8, -10, -25);
-  painter->drawText(textRect, Qt::TextWordWrap, taskText);
+
+  // Calculate badge width to reserve space
+  int badgeWidth = 60;
+  int badgeMargin = 8;
+  int rightPadding = 10;
+
+  // Create text rect that stops before the priority badge
+  QRectF textRect = rect.adjusted(10, 8, -(badgeWidth + badgeMargin + rightPadding), -25);
+
+  // Draw the elided text to handle overflow
+  QFontMetrics fm(titleFont);
+  QString elidedText = fm.elidedText(taskText, Qt::ElideRight, textRect.width());
+  painter->drawText(textRect, Qt::AlignLeft, elidedText);
 
   // Render due date
   painter->setFont(option.font);
