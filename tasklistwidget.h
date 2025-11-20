@@ -11,6 +11,7 @@ public:
   explicit TaskListWidget(const QString &columnName, QWidget *parent = nullptr);
 
   void addTask(const QString &taskText, const QDate &dueDate, const QString &priority);
+  void showContextMenu(const QPoint &pos);
 
   TaskListModel *taskModel() const;
 

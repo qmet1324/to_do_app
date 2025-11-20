@@ -5,10 +5,13 @@
 #include <QDate>
 #include <QPainterPath>
 #include <QTextLayout>
+#include <qcoreevent.h>
+#include <qevent.h>
 #include <qfontmetrics.h>
 #include <qnamespace.h>
 #include <qpoint.h>
 #include <qwidget.h>
+#include <QMenu>
 
 TaskItemDelegate::TaskItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent) {}
@@ -145,11 +148,13 @@ void TaskItemDelegate::paint(QPainter *painter,
   int rightPadding = 10;
 
   // Create text rect that stops before the priority badge
-  QRectF textRect = rect.adjusted(10, 8, -(badgeWidth + badgeMargin + rightPadding), -25);
+  QRectF textRect =
+      rect.adjusted(10, 8, -(badgeWidth + badgeMargin + rightPadding), -25);
 
   // Draw the elided text to handle overflow
   QFontMetrics fm(titleFont);
-  QString elidedText = fm.elidedText(taskText, Qt::ElideRight, textRect.width());
+  QString elidedText =
+      fm.elidedText(taskText, Qt::ElideRight, textRect.width());
   painter->drawText(textRect, Qt::AlignLeft, elidedText);
 
   // Render due date

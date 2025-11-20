@@ -1,11 +1,11 @@
 #include <QComboBox>
 #include <QDateEdit>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPainter>
 #include <QStyledItemDelegate>
-#include <QWidget>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QWidget>
 
 class TaskItemDelegate : public QStyledItemDelegate {
   Q_OBJECT
